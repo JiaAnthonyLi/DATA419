@@ -1,0 +1,4 @@
+1. Don't output my relations with others in file 'relations.txt',so the node of 'me' is not displayed in graphs. This method reduces the file size, as opposed to the '--include_me' option provided in the original version.
+2. Don't output the string of 'https://www.instagram.com/' in 'relations.txt', which is seen as redundancies.
+3. Correct 'classname' for being able to locate the right elements in web page HTML prabably because of the change of programs on the Instagram server side. Because the code was 2 years old and the Instagram webpages change all times, some code are likely to be unable to work now. (Competing with anti-scraping techniques is a challenging to all network scrape tools.)
+4. Modify sleep time and add codes for properly retryinig or suspending, once Instagram blocks requests.
