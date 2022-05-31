@@ -1,0 +1,300 @@
+
+# Tutorial - My Instagram Network
+<strong>Contents:</strong>
+1. Introduction
+2. Methodology
+3. Data Collection
+4. Network Analysis
+5. Graph Customization
+6. Legal and Ethical Consideration
+
+
+## Introduction
+Visualizing our Instagram networking is an exciting thing, but many are restrained because Instagram does not provide sufficient API, unlike other social media do. To address it, an operational, concise, easy-to-understand building process for Instagram networks will be introduced. It includes scraping profiles of followers or followings, analysing network structure, and network visualization.
+
+## Methodology
+<ul>
+<li><strong>Instagram data scraping:</strong> A open source instagram data scraper is used. The tool was developed in 2019 by a Data Science student, MaximPiessen, in Belgium. Instead of calling API, it uses Selenium WebDriver.</li>
+<li><strong>Network data analysis and visualization:</strong> <a href="https://networkx.org">Networkx</a>, a Python package, is used to reveal the charateristics of networks and visualizing network structures. Networkx uses Matplotlib as the data visualization library.</li>
+</ul>
+<strong>Steps:</strong>  
+To analyze one's social network, one's follower list is obtained first, then for each follower, their following list is obtained, next in the following list find the accounts that are also in the one's follower list. Through this process, find the relationships of all one's followers. 
+<img src="Methodology.png"></img> 
+As a student of Network Science, after analysing the real Instagram social network, we will be able to have a good understanding of online communities and social networks.
+In a word, in the end of the tutorial, you will learn a scraper tool, an approach to quantify and qualify networks, and a couple of techniques to beautify network graphs.
+
+## Data Collection
+Instagram only provides very few API endpoints for retrieving data, so a variety of web scrapers developed by data scientists are used for the Instagram data collection. An easy-to-use scraper, developed in Python by MaximPiessen, is introduced for our data collection and can be accessed on https://github.com/MaximPiessen/instagram_network_analysis. A bit of modification has been made to be run better in the local environment and to meet the requirement of the tutorial.
+
+
+### Step One: Download and run scraper
+The scraping code can be downloaded from
+https://github.com/JiaAnthonyLi/DATA419/tree/main/Tutorial.
+<ul>
+<li>bot.py: scraping class</li>
+<li>get_my_followers.py: call scraping class to get one's all follwers and generate 'my_followers.txt'</li>
+<li>get_relations.py: call scraping class to get the relations of one's all followers, and generate 'relations.txt'</li>
+</ul>
+
+
+### Step Two: Get my followers
+Run 'my_followers.py' in terminal.
+$python get_my_followers.py --username {your_IG_username} --password {your_IG_password}
+
+Notice:
+1. Use your Instagram username and password to replace the ones in the example.
+2. During the scraping, a new chrome will be opened and please make it partially visible otherwise often the server does not respond requests.
+3. If Instagram blocks requests too many times and the running gets stuck, you can stop the process and re-start.
+
+Result:
+'my_followers.txt' is generated and each line represents a follower link.
+
+
+### Step Three: Get relations of followers
+Run 'get_relations.py' in terminal.
+$python get_relations.py --username {your_IG_username}  --password {your_IG_password} --relations_file relations.txt
+
+Notice:
+Besides the three points to notice in step two.
+1. The name of the generated file can be customized by the argument '--relations_file'. For example, modify to 'my_relations.txt'.
+2. 'start_profile.txt' is used to save the last scraped follower's index. You can modify it and skip the follower that has thousands of followings to avoid scraping taking months. And no need to redo all scraping that has been done, due to manually stopping and restarting.
+3. The scraping may take a few days or weeks since one person normally has over 100 followers or followings.
+
+Result:
+'relations.txt' is generated and each line represents a link (relation) from a follower to a followed account.
+
+## Network Analysis
+Now, it is the time to use the file generated in the last section. The file is the input of the entire analysis. No matter whether you have succeeded to generate your own 'relations.txt' or not, we provide an example file 'my_relations.txt' for the demonstration.
+
+### 1. Get started
+
+```{python}
+# Load libraries
+import networkx as nx
+import matplotlib.pyplot as plt
+import numpy as np
+%matplotlib inline
+```
+
+### 2. Get a glance at the network
+
+```{python}
+# Load the file
+G = nx.read_edgelist('D:\\Study\\DATA419\\Tutorial\\instagram_network_analysis-master\\01 scraping\\my_relations.txt', 
+                        nodetype=str, 
+                        create_using=nx.DiGraph())
+# The summary of the graph
+print(nx.info(G))
+# Draw the graph
+nx.draw(G, with_labels=True, node_color='red', node_size=100, edge_color='blue', font_color='black', font_size=10)
+plt.show()
+```
+
+### 3. Neighbours
+In the Instagram network, successors represent followed persons, and predecessors represent followers. To find the successors and predecessors of one node (one person) in the network, we need to call DiGraph.predecessors() and DiGraph.successors().
+
+```{python}
+print('Successors of diane_channe:', list(G.successors("diane_channe")))
+print('Predecessors of diane_channe:', list(G.predecessors("diane_channe")))
+```
+
+After running the code above, we will see the all followers and followings of 'diane_channe'.
+
+### 4. Density
+Density shows how dense (sparse) a network is. To calculate it, divide the actual edge number in the network by the possible maximum number of edges. Networkx provides density() to output the statistic directly.
+
+```{python}
+nx.density(G)
+```
+
+### 5. Degree
+Further, we can find the network's 'average in-degree' or 'average out-degree', 'degree distribution', and 'average shortest path length'.
+
+```{python}
+# Calculate the average in-degree and out-degree of the network. In theory, they are the same.
+print('Average degree: {}'.format(G.number_of_edges() / G.number_of_nodes()))
+
+# Plot the degree distribution.
+degrees = [G.degree(n) for n in G.nodes()]
+plt.hist(degrees)
+plt.xlabel('K')
+plt.ylabel('Count')
+plt.title('Degree Distribution')
+plt.show()
+
+# Calculate the average shortest path length.
+nx.average_shortest_path_length(G)
+```
+
+We can see a power law distribution of degrees. Most people have few links, while a few people have a larger number of relations.
+Additionally, an exception is thrown if the network is directed and is not weakly connected. Use the code below to check the network attribute: is_weakly_connected.
+
+```{python}
+nx.is_weakly_connected(G) # To check if the network is weakly connected.
+```
+
+### 6. Centrality
+Centrality is a measurement to estimate the importance of a node. In practice, there are three ways to figure out centrality. They are betweenness centrality, closeness centrality, and degree centrality.
+
+#### - Betweenness centrality:
+'Betweenness centrality' can be used to measure the importance of nodes when a diffusion process occurs in a network. In this case, the transmission of 'meme' can be a diffusion process.
+One manifestation of 'betweenness centrality' is that the more the shortest paths by which a node is crossed, the higher the betweenness centrality of the node is. Networkx provides the implementation.
+
+```{python}
+betweenness = nx.centrality.betweenness_centrality(G)   # Return the betweenness centrality of all nodes.
+highest_betweenness_node = max(G.nodes, key=betweenness.get)    # Return the node with the highest betweenness centrality.
+# Output this node with the value of the betweenness centrality.
+print(highest_betweenness_node) 
+betweenness[highest_betweenness_node]
+```
+
+#### - Closeness centrality:
+'Closeness centrality' presents how close a node is to other nodes.
+
+```{python}
+closeness = nx.centrality.closeness_centrality(G)   # Return the closeness centrality of all nodes.
+highest_closeness_node = max(G.nodes, key=closeness.get)    # Return the node with the highest closeness centrality.
+# Output this node with the value of the closeness centrality.
+print(highest_closeness_node)
+closeness[highest_closeness_node]
+```
+
+#### - Degree centrality:
+Centrality of a node can be computed by how many links to or from the node. The in-degree centrality and out-degree centrality are computed respectively in code below.
+
+```{python}
+in_degree = nx.centrality.in_degree_centrality(G)   # Return the in-degree centrality of all nodes.
+highest_in_degree_node = max(G.nodes, key=in_degree.get)    # Return the node with the highest in-degree centrality.
+# Output this node with the value of the in-degree centrality.
+print(highest_in_degree_node)
+in_degree[highest_in_degree_node]
+```
+
+<strong>Exercise:</strong> please fill out the blank in the below code block to get the node with the highest out-degree centrality.
+
+```{python}
+
+out_degree = (____________)   # Return the out-degree centrality of all nodes.
+highest_out_degree_node = (____________)    # Return the node with the highest out-degree centrality.
+# Output this node with the value of the out-degree centrality.
+(____________)
+(____________)
+```
+
+#### - EigenCentrality:
+'EigenCentrality' is also a way to measure centrality. It not only, as 'degree centrality', considers the degree of a node, but also considers the degree of the neighbour nodes of the node. For example, if the degree of a node is small, take it for granted, the influence of the node is small. But if the node is connected to a node that has numerous links, the influence of the original node is somehow increased.
+
+```{python}
+eigenvector = nx.centrality.eigenvector_centrality(G)   # Return the eigenvector centrality of all nodes.
+highest_eigenvector_node = max(G.nodes, key=eigenvector.get)    # Return the node with the highest eigenvector centrality.
+# Output the node with the value of the eigenvector centrality.
+print(highest_eigenvector_node)
+eigenvector[highest_eigenvector_node]
+```
+
+#### - Page Rank
+'Page Rank' is a variant of eigenvector centrality.
+
+```{python}
+pagerank = nx.pagerank(G)   # Return the page rank of all nodes.  
+highest_pagerank_node = max(G.nodes, key=pagerank.get)    # Return the node with the highest page rank.
+# Output the node with the value of the page rank.
+print(highest_pagerank_node)
+eigenvector[highest_pagerank_node]
+```
+
+### 7. Clustering / Community detection
+A community include nodes that have the same properties. In 'my Instagram network', it could be my classmates at uni, my relatives, or my co-workers. 'Girvan-Newman' algorithm is used to identify communities. The principle of the algorithm is iteratively removing the edge with the highest edge betweenness and comparing the modularity between before and after. The code below demonstrate the process. Finally, the best division of communities is selected.
+
+```{python}
+def community_detection(G_instagram):
+    communities_generator = nx.algorithms.community.girvan_newman(G_instagram)
+    communities_newman = next(communities_generator)
+    modularity_newman_new = nx.algorithms.community.modularity(G_instagram, communities_newman)
+
+    modularity_newman_old = 0.00001
+    count = 1
+    while modularity_newman_new > modularity_newman_old:
+        modularity_newman_old = modularity_newman_new
+        communities_newman_final = communities_newman
+        communities_newman = next(communities_generator)
+        modularity_newman_new = nx.algorithms.community.modularity(G_instagram, communities_newman)
+        count += 1
+
+    partition_newman = {}
+    for idx, cluster in enumerate(communities_newman_final):
+        for profile in cluster:
+            partition_newman[profile] = idx
+
+    return partition_newman
+
+best_partition_map = community_detection(G)
+
+node_colors = [best_partition_map[n] for n in G.nodes()]
+nx.draw(G, with_labels=False, node_color=node_colors)
+```
+
+## Graph Customization
+MaximPiessen's code provides a way of visualization featuring an interactive graph generated by .json and .js, which is great. An alternative way to improve the visualization is the drawing functionality of Networkx and Matplotlib. 
+
+```{python}
+def exclude_max_group(partition_map):
+    from collections import Counter
+    counter = Counter(partition_map.values())
+    biggest_group = max(counter, key=counter.get)
+
+    new_partition_map = dict()
+    # Iterate over all the items in dictionary and filter items which has even keys
+    for (key, value) in partition_map.items():
+        # Check if key is even then add pair to new dictionary
+        if value != biggest_group:
+            new_partition_map[key] = value
+
+    labels = {}    
+    for node in G.nodes():
+        if node in new_partition_map.keys():
+            #set the node name as the key and the label as its value 
+            labels[node] = node
+
+    return labels
+```
+
+Function 'exclude_max_group()' return a collection of nodes that are not in the biggest community, so that only nodes in small communities are labelled in the graph.
+
+```{python}
+# Drawing with a spring layout.
+pos = nx.spring_layout(G)
+# Define the graph size
+plt.figure(3,figsize=(10,8))
+# Draw the network
+nx.draw(G, pos, with_labels=False, 
+            node_color=node_colors, # Change node colors by commnunities
+            arrows=True,    # Set if the links have arrows
+            arrowsize=8,    # Set arrow size
+            node_size=150,  # Set node size
+            edgecolors="gray",  # Set node border color
+            edge_color = "gray", # Set edge color
+            linewidths =0.5,    # Set line width of symbol border
+            width=0.5,          # Set edge line width
+            font_size=10)       # Set label font size
+# Draw the labels
+nx.draw_networkx_labels(G, pos, labels=exclude_max_group(best_partition_map), 
+                            alpha=0.9, # Set transparency of label text
+                            font_size=16, 
+                            horizontalalignment="right", 
+                            verticalalignment="top")
+plt.show()
+```
+
+Networkx has a lot of functions to draw graphs. 'nx.draw' draw a basic network and 'draw_network_labels' draw labels. Drawing can be customized by multiple options. More details can be viewed on https://networkx.org/documentation/stable/reference/drawing.html.
+
+### Exercise:
+Change the size of nodes in small communities in last graph to 200.
+```{python}
+```
+
+## Legal and Ethical Consideration
+
+Scraping and using data on social media platforms, not using official API, may be illegal. Before obtaining data, highly recommend reading the Terms of Use and referring to the robots.txt files of your target websites, otherwise you may be in violation. 
+Be cautious of the use of data. Avoid the breach of copyright or privacy because of the publishing of the scraped data. Scam and phishing are prohibited. Jurisdictions in different countries and regions should be taken into consideration too.
+
