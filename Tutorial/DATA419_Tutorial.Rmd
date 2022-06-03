@@ -19,7 +19,8 @@ Visualizing our Instagram networking is an exciting thing, but many are restrain
 </ul>
 <strong>Steps:</strong>  
 To analyze one's social network, one's follower list is obtained first, then for each follower, their following list is obtained, next in the following list find the accounts that are also in the one's follower list. Through this process, find the relationships of all one's followers. 
-<img src="Methodology.png"></img> 
+![Diagram Description automatically
+generated](./methodology.png)
 As a student of Network Science, after analysing the real Instagram social network, we will be able to have a good understanding of online communities and social networks.
 In a word, in the end of the tutorial, you will learn a scraper tool, an approach to quantify and qualify networks, and a couple of techniques to beautify network graphs.
 
