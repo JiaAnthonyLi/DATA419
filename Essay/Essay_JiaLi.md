@@ -268,7 +268,7 @@ Korea Covid spreading network, Jo et al. (2021) indicated that firstly
 the non-pharmaceutical intervention such as social distancing could be
 less effective because it is not based on the analysis of social network
 structure. It is only a commonly used approach. Secondly, the production
-of R0 does consider network influence. So, it is less reliable.
+of R0 does not consider network influence. So, it is less reliable.
 Outbreaks could be different even under the same R0. Eventually, they
 concentrated on out-degree distribution. In a simulation, the removal of
 top out-degree nodes can reduce the case number. This case highlighted
