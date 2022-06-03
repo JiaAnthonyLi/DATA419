@@ -298,6 +298,6 @@ Change the size of nodes in small communities in the last graph to 200.
 
 ## Legal and Ethical Consideration
 
-Scraping and using data on social media platforms, not using official API, may be illegal. Before obtaining data, highly recommend reading the Terms of Use and referring to the robots.txt files of your target websites, otherwise you may be in violation of the terms. 
+Scraping and using data from social media platforms, not using official API, may be illegal. Before obtaining data, highly recommend reading the Terms of Use and referring to the robots.txt files of your target websites, otherwise you may be in violation of the terms. 
 Be cautious of the use of data. Avoid the breach of copyright or privacy because of the publishing of the scraped data. Scam and phishing are prohibited. Jurisdictions in different countries and regions should be taken into consideration too.
 
