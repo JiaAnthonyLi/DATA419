@@ -6,7 +6,7 @@ Covid-19 is the latest emerging pandemic humans suffer. Like other
 transmitted diseases, the pathogen of Covid-19 spreads on our social
 contact networks. The properties and structures of Covid-19 transmission
 networks can truly impact the outcome of the pandemic, either long-term
-existence or die out. Network science was formed only in the 21^st^
+existence or die out. Network science was formed only in the 21st
 century. The research for networks can help with the analysis,
 monitoring, simulation, and prediction of the pandemic. An important
 concept in network science is the 'small world' property that exists in
