@@ -18,9 +18,9 @@ Visualizing our Instagram networking is an exciting thing, but many are restrain
 <li><strong>Network data analysis and visualization:</strong> <a href="https://networkx.org">Networkx</a>, a Python package, is used to reveal the charateristics of networks and visualizing network structures. Networkx uses Matplotlib as the data visualization library.</li>
 </ul>
 <strong>Steps:</strong>  
-To analyze one's social network, one's follower list is obtained first, then for each follower, their following list is obtained, next in the following list find the accounts that are also in the one's follower list. Through this process, find the relationships of all one's followers. 
+To analyse one's social network, one's follower list is obtained first, then for each follower, their following list is obtained, next in the following list find the accounts that are also in the one's follower list. Through this process, find the relationships of all one's followers. 
 ![Diagram Description automatically
-generated](./methodology.png)
+generated](./Methodology.png)
 As a student of Network Science, after analysing the real Instagram social network, we will be able to have a good understanding of online communities and social networks.
 In a word, in the end of the tutorial, you will learn a scraper tool, an approach to quantify and qualify networks, and a couple of techniques to beautify network graphs.
 
@@ -30,7 +30,8 @@ Instagram only provides very few API endpoints for retrieving data, so a variety
 
 ### Step One: Download and run scraper
 The scraping code can be downloaded from
-https://github.com/JiaAnthonyLi/DATA419/tree/main/Tutorial.
+[https://github.com/JiaAnthonyLi/DATA419/tree/main/Tutorial/Code of scraper](https://github.com/JiaAnthonyLi/DATA419/tree/main/Tutorial/Code of scraper).
+
 <ul>
 <li>bot.py: scraping class</li>
 <li>get_my_followers.py: call scraping class to get one's all follwers and generate 'my_followers.txt'</li>
@@ -44,7 +45,7 @@ $python get_my_followers.py --username {your_IG_username} --password {your_IG_pa
 
 Notice:
 1. Use your Instagram username and password to replace the ones in the example.
-2. During the scraping, a new chrome will be opened and please make it partially visible otherwise often the server does not respond requests.
+2. During the scraping, a new chrome will be opened and please make it at least partially visible otherwise often the server does not respond requests.
 3. If Instagram blocks requests too many times and the running gets stuck, you can stop the process and re-start.
 
 Result:
@@ -57,8 +58,9 @@ $python get_relations.py --username {your_IG_username}  --password {your_IG_pass
 
 Notice:
 Besides the three points to notice in step two.
+
 1. The name of the generated file can be customized by the argument '--relations_file'. For example, modify to 'my_relations.txt'.
-2. 'start_profile.txt' is used to save the last scraped follower's index. You can modify it and skip the follower that has thousands of followings to avoid scraping taking months. And no need to redo all scraping that has been done, due to manually stopping and restarting.
+2. 'start_profile.txt' is used to save the last scraped follower's index. You can modify it and skip the follower that has thousands of followings to avoid scraping taking months. And by the file, no need to redo all scraping that has been done, if manually stopping and restarting in the last run.
 3. The scraping may take a few days or weeks since one person normally has over 100 followers or followings.
 
 Result:
@@ -81,7 +83,7 @@ import numpy as np
 
 ```{python}
 # Load the file
-G = nx.read_edgelist('D:\\Study\\DATA419\\Tutorial\\instagram_network_analysis-master\\01 scraping\\my_relations.txt', 
+G = nx.read_edgelist('https://github.com/JiaAnthonyLi/DATA419/blob/main/Tutorial/my_relations.txt', 
                         nodetype=str, 
                         create_using=nx.DiGraph())
 # The summary of the graph
@@ -205,7 +207,7 @@ eigenvector[highest_pagerank_node]
 ```
 
 ### 7. Clustering / Community detection
-A community include nodes that have the same properties. In 'my Instagram network', it could be my classmates at uni, my relatives, or my co-workers. 'Girvan-Newman' algorithm is used to identify communities. The principle of the algorithm is iteratively removing the edge with the highest edge betweenness and comparing the modularity between before and after. The code below demonstrate the process. Finally, the best division of communities is selected.
+A community includes nodes that have the same properties. In 'my Instagram network', it could be my classmates at uni, my relatives, or my co-workers. 'Girvan-Newman' algorithm is used to identify communities. The principle of the algorithm is iteratively removing the edge with the highest edge betweenness and comparing the modularity between before and after. The code below demonstrate the process. Finally, the best division of communities is selected.
 
 ```{python}
 def community_detection(G_instagram):
@@ -287,15 +289,15 @@ nx.draw_networkx_labels(G, pos, labels=exclude_max_group(best_partition_map),
 plt.show()
 ```
 
-Networkx has a lot of functions to draw graphs. 'nx.draw' draw a basic network and 'draw_network_labels' draw labels. Drawing can be customized by multiple options. More details can be viewed on https://networkx.org/documentation/stable/reference/drawing.html.
+Networkx has a lot of functions to draw graphs. 'nx.draw()' draw a basic network and 'draw_network_labels()' draw labels. Drawing can be customized by multiple parameters. Try to learn the use of each parameter in the sample code. More details can be viewed on https://networkx.org/documentation/stable/reference/drawing.html.
 
 ### Exercise:
-Change the size of nodes in small communities in last graph to 200.
+Change the size of nodes in small communities in the last graph to 200.
 ```{python}
 ```
 
 ## Legal and Ethical Consideration
 
-Scraping and using data on social media platforms, not using official API, may be illegal. Before obtaining data, highly recommend reading the Terms of Use and referring to the robots.txt files of your target websites, otherwise you may be in violation. 
+Scraping and using data on social media platforms, not using official API, may be illegal. Before obtaining data, highly recommend reading the Terms of Use and referring to the robots.txt files of your target websites, otherwise you may be in violation of the terms. 
 Be cautious of the use of data. Avoid the breach of copyright or privacy because of the publishing of the scraped data. Scam and phishing are prohibited. Jurisdictions in different countries and regions should be taken into consideration too.
 
