@@ -83,7 +83,7 @@ import numpy as np
 
 ```{python}
 # Load the file
-G = nx.read_edgelist('https://github.com/JiaAnthonyLi/DATA419/blob/main/Tutorial/my_relations.txt', 
+G = nx.read_edgelist('my_relations.txt', 
                         nodetype=str, 
                         create_using=nx.DiGraph())
 # The summary of the graph
